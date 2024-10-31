@@ -1,1 +1,5 @@
-# simple-logs-collector
+# Simple Log Collector
+
+## License
+
+MIT
