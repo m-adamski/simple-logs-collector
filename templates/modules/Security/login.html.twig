@@ -1,0 +1,22 @@
+{% extends 'base/base.html.twig' %}
+{% trans_default_domain 'security' %}
+
+{% block body %}
+    <div class="flex flex-row items-center justify-center w-full min-h-screen">
+        <div class="flex flex-col bg-white border border-gray-200 shadow-sm rounded-xl p-4 w-full max-w-md md:p-8 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400">
+            {% if error %}
+                <div class="mb-4 bg-red-100 border border-red-200 text-sm text-red-800 rounded-lg p-4 dark:bg-red-800/10 dark:border-red-900 dark:text-red-500" role="alert">
+                    {{ 'An error occurred while trying to authorize. You may not be authorized to use the system or your account may have been blocked'|trans }}
+                </div>
+            {% endif %}
+
+            {{ form_start(auth_form) }}
+            {{ form_row(auth_form._username) }}
+            {{ form_row(auth_form._password) }}
+
+            <twig:Button type="submit" class="w-full">{{ 'Sign in'|trans({}, 'security') }}</twig:Button>
+
+            {{ form_end(auth_form) }}
+        </div>
+    </div>
+{% endblock %}

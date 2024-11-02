@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="icon" type="image/png" href="{{ asset('images/favicon.png') }}" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+
+        <title>
+            {% block title %}Simple Logs Collector{% endblock %}
+        </title>
+    </head>
+    <body class="font-sans text-sm text-gray-800 bg-white dark:text-neutral-200 dark:bg-neutral-900">
+        {% block body %}{% endblock %}
+
+        {{ notification() }}
+        {% include 'parts/confirmation-modal.html.twig' %}
+
+        {% block javascripts %}
+            {% block importmap %}
+                {{ importmap('application') }}
+            {% endblock %}
+        {% endblock %}
+    </body>
+</html>

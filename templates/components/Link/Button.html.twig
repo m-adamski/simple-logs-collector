@@ -1,0 +1,7 @@
+{% extends 'components/Button.html.twig' %}
+
+{% block element %}
+    <a {{ attributes.without('class') }} class="{{ className.apply({size, variant, color}, attributes.render('class'))|tailwind_merge }}">
+        {% block content %}{% endblock %}
+    </a>
+{% endblock %}

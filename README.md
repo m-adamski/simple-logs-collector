@@ -1,4 +1,4 @@
-# Simple Log Collector
+# Simple Logs Collector
 
 ## License
 

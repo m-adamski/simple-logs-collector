@@ -1,0 +1,41 @@
+{% extends 'base/container.html.twig' %}
+{% trans_default_domain 'client' %}
+
+{% block content %}
+    <div class="max-w-4xl">
+        <div class="mb-10">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-neutral-200">
+                {{ 'Create client'|trans }}
+            </h2>
+            <p class="text-sm text-gray-600 dark:text-neutral-400">
+                {{ 'Provide required information to create a new client'| trans }}
+            </p>
+        </div>
+
+        {{ form_start(create_form) }}
+
+        <div class="grid gap-y-5">
+            <div class="grid grid-cols-12 gap-x-4">
+                <div class="col-span-12 md:col-span-3">{{ form_label(create_form.name) }}</div>
+                <div class="col-span-12 md:col-span-9">{{ form_widget(create_form.name) }}</div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-4">
+                <div class="col-span-12 md:col-span-3">{{ form_label(create_form.secretToken) }}</div>
+                <div class="col-span-12 md:col-span-9">{{ form_widget(create_form.secretToken) }}</div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-x-4">
+                <div class="col-span-12 md:col-span-3">{{ form_label(create_form.active) }}</div>
+                <div class="col-span-12 md:col-span-9">{{ form_widget(create_form.active) }}</div>
+            </div>
+        </div>
+
+        <div class="mt-5 flex justify-end gap-x-2">
+            <twig:Link:Button href="{{ path('client') }}" variant="outline">{{ 'Cancel'|trans({}, 'messages') }}</twig:Link:Button>
+            <twig:Button type="submit">{{ 'Save changes'|trans({}, 'messages') }}</twig:Button>
+        </div>
+
+        {{ form_end(create_form) }}
+    </div>
+{% endblock %}

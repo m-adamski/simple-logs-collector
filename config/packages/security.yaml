@@ -1,11 +1,15 @@
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+            algorithm: 'bcrypt'
+            cost: 15
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        database_provider:
+            entity:
+                class: App\Entity\User
 
     firewalls:
         dev:
@@ -13,7 +17,28 @@ security:
             security: false
         main:
             lazy: true
-            provider: users_in_memory
+            pattern: ^/
+            provider: database_provider
+            switch_user: false
+
+            # Login attempts are limited on max_attempts (default: 5) failed requests
+            # for IP address + username and 5 * max_attempts failed requests for IP address.
+            #
+            # Internally, Symfony uses the Rate Limiter component which by default uses
+            # Symfony's cache to store the previous login attempts
+            # https://symfony.com/doc/current/security.html#limiting-login-attempts
+            login_throttling:
+                max_attempts: 3
+                interval: '15 minutes'
+
+            form_login:
+                login_path: security.auth.login
+                check_path: security.auth.login
+                enable_csrf: true
+
+            logout:
+                path: security.auth.logout
+                target: security.auth.login
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
@@ -24,8 +49,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-    # - { path: ^/admin, roles: ROLE_ADMIN }
-    # - { path: ^/profile, roles: ROLE_USER }
+        - { path: '^/healthcheck', roles: PUBLIC_ACCESS, requires_channel: '%env(REQUIRED_SCHEME)%' }
+        - { path: '^/(en)/auth/login', roles: PUBLIC_ACCESS, requires_channel: '%env(REQUIRED_SCHEME)%' }
+        - { path: '^/', roles: IS_AUTHENTICATED_FULLY, requires_channel: '%env(REQUIRED_SCHEME)%' }
+
+    role_hierarchy:
+        ROLE_ADMINISTRATOR: [ ROLE_USER ]
 
 when@test:
     security:
