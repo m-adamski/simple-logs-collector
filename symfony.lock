@@ -29,6 +29,9 @@
     "knplabs/knp-menu-bundle": {
         "version": "v3.4.2"
     },
+    "m-adamski/symfony-notification-bundle": {
+        "version": "5.0.0"
+    },
     "symfony/asset-mapper": {
         "version": "7.1",
         "recipe": {

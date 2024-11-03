@@ -2,12 +2,12 @@
 
 namespace App\Controller;
 
+use Adamski\Symfony\NotificationBundle\Helper\NotificationHelper;
+use Adamski\Symfony\NotificationBundle\Model\Notification;
+use Adamski\Symfony\NotificationBundle\Model\Type;
 use App\Entity\User;
 use App\Form\User\BaseType;
-use App\Helper\NotificationHelper;
 use App\Helper\SecurityHelper;
-use App\Model\Notification\Notification;
-use App\Model\Notification\Type;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -19,7 +19,7 @@ class UserController extends AbstractController {
     public function __construct(
         private readonly UserRepository     $userRepository,
         private readonly SecurityHelper     $securityHelper,
-        private readonly NotificationHelper $notificationHelper
+        private readonly NotificationHelper $notificationHelper,
     ) {
     }
 
@@ -49,7 +49,7 @@ class UserController extends AbstractController {
 
                 // Save changes and create notification
                 $this->userRepository->persist($currentUser, true);
-                $this->notificationHelper->set(
+                $this->notificationHelper->add(
                     new Notification(Type::SUCCESS, "Account has been successfully created")
                 );
 
@@ -79,7 +79,7 @@ class UserController extends AbstractController {
 
                     // Save changes and create notification
                     $this->userRepository->persist($currentUser, true);
-                    $this->notificationHelper->set(
+                    $this->notificationHelper->add(
                         new Notification(Type::SUCCESS, "Changes were saved successfully")
                     );
 
@@ -101,7 +101,7 @@ class UserController extends AbstractController {
 
         if (null !== $currentUser = $this->userRepository->findOneBy(["id" => $id])) {
             $this->userRepository->remove($currentUser, true);
-            $this->notificationHelper->set(
+            $this->notificationHelper->add(
                 new Notification(Type::SUCCESS, "Account has been successfully deleted")
             );
 

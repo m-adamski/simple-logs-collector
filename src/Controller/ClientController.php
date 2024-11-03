@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
+use Adamski\Symfony\NotificationBundle\Helper\NotificationHelper;
+use Adamski\Symfony\NotificationBundle\Model\Notification;
+use Adamski\Symfony\NotificationBundle\Model\Type;
 use App\Entity\Client;
 use App\Form\Client\BaseType;
-use App\Helper\NotificationHelper;
-use App\Model\Notification\Notification;
-use App\Model\Notification\Type;
 use App\Repository\ClientRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -43,7 +43,7 @@ class ClientController extends AbstractController {
 
             if ($createForm->isSubmitted() && $createForm->isValid()) {
                 $this->clientRepository->persist($currentClient, true);
-                $this->notificationHelper->set(
+                $this->notificationHelper->add(
                     new Notification(Type::SUCCESS, "Client has been successfully created")
                 );
 
@@ -68,7 +68,7 @@ class ClientController extends AbstractController {
 
                 if ($editForm->isSubmitted() && $editForm->isValid()) {
                     $this->clientRepository->persist($currentClient, true);
-                    $this->notificationHelper->set(
+                    $this->notificationHelper->add(
                         new Notification(Type::SUCCESS, "Changes were saved successfully")
                     );
 
@@ -90,7 +90,7 @@ class ClientController extends AbstractController {
 
         if (null !== ($currentClient = $this->clientRepository->findOneBy(["id" => $id]))) {
             $this->clientRepository->remove($currentClient, true);
-            $this->notificationHelper->set(
+            $this->notificationHelper->add(
                 new Notification(Type::SUCCESS, "Client has been successfully deleted")
             );
 
