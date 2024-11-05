@@ -27,6 +27,13 @@ services:
             - '%env(DATABASE_URL)%'
             - { db_table: 'session', ttl: 3600 }
 
+    App\Client\InfluxDbClient:
+        arguments:
+            - '%env(INFLUXDB_URL)%'
+            - '%env(INFLUXDB_TOKEN)%'
+            - '%env(INFLUXDB_BUCKET)%'
+            - '%env(INFLUXDB_ORG)%'
+
     App\Menu\MenuBuilder:
         arguments:
             - '@Knp\Menu\FactoryInterface'
@@ -36,6 +43,6 @@ services:
     Knp\Menu\MenuItem:
         arguments:
             - '@Symfony\Component\HttpFoundation\RequestStack'
-        factory: ['@App\Menu\MenuBuilder', 'createMainMenu']
+        factory: [ '@App\Menu\MenuBuilder', 'createMainMenu' ]
         tags:
             - { name: knp_menu.menu, alias: main }
