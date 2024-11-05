@@ -848,10 +848,6 @@ select {
   bottom: 100%;
 }
 
-.end-3 {
-  inset-inline-end: 0.75rem;
-}
-
 .end-4 {
   inset-inline-end: 1rem;
 }
@@ -862,10 +858,6 @@ select {
 
 .top-0 {
   top: 0px;
-}
-
-.top-1\/2 {
-  top: 50%;
 }
 
 .top-full {
@@ -947,12 +939,20 @@ select {
   margin-bottom: 1.25rem;
 }
 
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
 .me-3 {
   margin-inline-end: 0.75rem;
 }
 
 .me-5 {
   margin-inline-end: 1.25rem;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
 }
 
 .ms-0\.5 {
@@ -977,6 +977,10 @@ select {
 
 .mt-0\.5 {
   margin-top: 0.125rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
 }
 
 .mt-2 {
@@ -1085,10 +1089,6 @@ select {
   height: auto;
 }
 
-.max-h-72 {
-  max-height: 18rem;
-}
-
 .max-h-\[75vh\] {
   max-height: 75vh;
 }
@@ -1171,11 +1171,6 @@ select {
 
 .basis-full {
   flex-basis: 100%;
-}
-
-.-translate-y-1\/2 {
-  --tw-translate-y: -50%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .transform {
@@ -1410,6 +1405,11 @@ select {
   border-color: rgb(254 202 202 / var(--tw-border-opacity));
 }
 
+.border-red-700 {
+  --tw-border-opacity: 1;
+  border-color: rgb(185 28 28 / var(--tw-border-opacity));
+}
+
 .border-transparent {
   border-color: transparent;
 }
@@ -1478,10 +1478,6 @@ select {
 
 .stroke-black {
   stroke: #000;
-}
-
-.p-1 {
-  padding: 0.25rem;
 }
 
 .p-1\.5 {
@@ -1711,6 +1707,11 @@ select {
 .text-red-600 {
   --tw-text-opacity: 1;
   color: rgb(220 38 38 / var(--tw-text-opacity));
+}
+
+.text-red-700 {
+  --tw-text-opacity: 1;
+  color: rgb(185 28 28 / var(--tw-text-opacity));
 }
 
 .text-red-800 {
@@ -2166,30 +2167,6 @@ label.required::after {
 
 .open .hs-overlay-open\:duration-500 {
   transition-duration: 500ms;
-}
-
-.selected.hs-selected\:block {
-  display: block;
-}
-
-.selected .hs-selected\:block {
-  display: block;
-}
-
-.disabled.hs-select-disabled\:pointer-events-none {
-  pointer-events: none;
-}
-
-.disabled.hs-select-disabled\:opacity-50 {
-  opacity: 0.5;
-}
-
-.disabled .hs-select-disabled\:pointer-events-none {
-  pointer-events: none;
-}
-
-.disabled .hs-select-disabled\:opacity-50 {
-  opacity: 0.5;
 }
 
 .selected .hs-combo-box-selected\:block {

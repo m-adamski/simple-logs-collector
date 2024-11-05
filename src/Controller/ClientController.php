@@ -18,8 +18,7 @@ class ClientController extends AbstractController {
     public function __construct(
         private readonly ClientRepository   $clientRepository,
         private readonly NotificationHelper $notificationHelper,
-    ) {
-    }
+    ) {}
 
     #[Route("/{_locale}/client", name: "client", methods: ["GET"])]
     public function index(Request $request): Response {
@@ -102,6 +101,7 @@ class ClientController extends AbstractController {
 
     /**
      * @param Client $client
+     *
      * @return FormInterface
      */
     private function createCreateForm(Client $client): FormInterface {
@@ -113,6 +113,7 @@ class ClientController extends AbstractController {
 
     /**
      * @param Client $client
+     *
      * @return FormInterface
      */
     private function createEditForm(Client $client): FormInterface {

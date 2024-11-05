@@ -12,8 +12,7 @@ class SecurityHelper {
         private readonly UserRepository              $userRepository,
         private readonly TokenStorageInterface       $tokenStorage,
         private readonly UserPasswordHasherInterface $passwordHasher,
-    ) {
-    }
+    ) {}
 
     public function getUser(): ?User {
         if (null !== ($storageUser = $this->tokenStorage->getToken()->getUser())) {

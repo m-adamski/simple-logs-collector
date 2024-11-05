@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client {
@@ -12,9 +13,12 @@ class Client {
     #[ORM\Column(type: "integer", unique: true)]
     private ?int $id = null;
 
+    #[Assert\NotBlank]
     #[ORM\Column(type: "string", unique: true)]
     private string $name;
 
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 12)]
     #[ORM\Column(type: "string")]
     private string $secretToken;
 

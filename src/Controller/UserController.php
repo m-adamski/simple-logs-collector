@@ -20,8 +20,7 @@ class UserController extends AbstractController {
         private readonly UserRepository     $userRepository,
         private readonly SecurityHelper     $securityHelper,
         private readonly NotificationHelper $notificationHelper,
-    ) {
-    }
+    ) {}
 
     #[Route("/{_locale}/user", name: "user", methods: ["GET"])]
     public function index(Request $request): Response {
@@ -113,6 +112,7 @@ class UserController extends AbstractController {
 
     /**
      * @param User $user
+     *
      * @return FormInterface
      */
     private function createCreateForm(User $user): FormInterface {
@@ -125,6 +125,7 @@ class UserController extends AbstractController {
 
     /**
      * @param User $user
+     *
      * @return FormInterface
      */
     private function createEditForm(User $user): FormInterface {

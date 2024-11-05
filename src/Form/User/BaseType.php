@@ -3,9 +3,9 @@
 namespace App\Form\User;
 
 use App\Entity\User;
-use App\Form\AdvancedChoiceType;
 use App\Model\User\Role;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -26,13 +26,14 @@ class BaseType extends AbstractType {
                 "attr"     => ["placeholder" => "john.doe@example.com"],
                 "required" => true,
             ])
-            ->add("roles", AdvancedChoiceType::class, [
+            ->add("roles", ChoiceType::class, [
                 "label"    => "Roles",
                 "choices"  => Role::getChoices(),
                 "multiple" => true,
+                "expanded" => false,
                 "required" => false,
             ])
-            ->add("active", AdvancedChoiceType::class, [
+            ->add("active", ChoiceType::class, [
                 "label"    => "Status",
                 "choices"  => ["Active" => true, "Disabled" => false],
                 "required" => true,

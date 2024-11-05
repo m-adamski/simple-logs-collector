@@ -34,6 +34,7 @@ class SecurityController extends AbstractController {
 
     /**
      * @param string $lastUsername
+     *
      * @return FormInterface
      */
     private function createAuthForm(string $lastUsername): FormInterface {

@@ -26,10 +26,6 @@ class AuthenticationType extends AbstractType {
             ]);
     }
 
-    /**
-     * @param OptionsResolver $resolver
-     * @return void
-     */
     public function configureOptions(OptionsResolver $resolver): void {
         $resolver->setRequired("last_username");
 
@@ -42,9 +38,6 @@ class AuthenticationType extends AbstractType {
         ]);
     }
 
-    /**
-     * @return string
-     */
     public function getBlockPrefix(): string {
         // In this case, it needs to be blank string because firewall expects _username & _password fields
         // https://symfony.com/doc/current/security.html#form-login

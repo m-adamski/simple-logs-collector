@@ -3,8 +3,8 @@
 namespace App\Form\Client;
 
 use App\Entity\Client;
-use App\Form\AdvancedChoiceType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,7 +20,7 @@ class BaseType extends AbstractType {
                 "label"    => "Secret Token",
                 "required" => true,
             ])
-            ->add("active", AdvancedChoiceType::class, [
+            ->add("active", ChoiceType::class, [
                 "label"    => "Status",
                 "choices"  => ["Active" => true, "Disabled" => false],
                 "required" => true,

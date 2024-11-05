@@ -9,8 +9,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class MenuBuilder {
     public function __construct(
         private readonly FactoryInterface $factory
-    ) {
-    }
+    ) {}
 
     public function createMainMenu(RequestStack $requestStack): ItemInterface {
         $menu = $this->factory->createItem("root");

@@ -1520,16 +1520,16 @@
         },
         {
             "name": "m-adamski/symfony-notification-bundle",
-            "version": "5.0.1",
+            "version": "5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/m-adamski/symfony-notification-bundle.git",
-                "reference": "cc22d9b2d62284b44c7f4e06e1aad3fbfdcdd5bd"
+                "reference": "19bb65513427f071881e73d4b7aa0cb2b04ffe3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/m-adamski/symfony-notification-bundle/zipball/cc22d9b2d62284b44c7f4e06e1aad3fbfdcdd5bd",
-                "reference": "cc22d9b2d62284b44c7f4e06e1aad3fbfdcdd5bd",
+                "url": "https://api.github.com/repos/m-adamski/symfony-notification-bundle/zipball/19bb65513427f071881e73d4b7aa0cb2b04ffe3f",
+                "reference": "19bb65513427f071881e73d4b7aa0cb2b04ffe3f",
                 "shasum": ""
             },
             "require": {
@@ -1565,9 +1565,9 @@
             "description": "The Symfony Bundle was created to support simple notifications",
             "support": {
                 "issues": "https://github.com/m-adamski/symfony-notification-bundle/issues",
-                "source": "https://github.com/m-adamski/symfony-notification-bundle/tree/5.0.1"
+                "source": "https://github.com/m-adamski/symfony-notification-bundle/tree/5.0.2"
             },
-            "time": "2024-11-03T16:31:34+00:00"
+            "time": "2024-11-05T10:31:18+00:00"
         },
         {
             "name": "psr/cache",
@@ -6755,7 +6755,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -6764,6 +6764,6 @@
         "ext-iconv": "*",
         "ext-openssl": "*"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
