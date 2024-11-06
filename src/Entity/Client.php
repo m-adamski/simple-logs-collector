@@ -4,10 +4,12 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-class Client {
+class Client implements UserInterface {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", unique: true)]
@@ -38,6 +40,18 @@ class Client {
 
     public function getId(): ?int {
         return $this->id;
+    }
+
+    public function getUserIdentifier(): string {
+        return $this->getId();
+    }
+
+    public function getRoles(): array {
+        return ["ROLE_CLIENT"];
+    }
+
+    public function eraseCredentials(): void {
+        // Nothing here
     }
 
     public function getName(): string {

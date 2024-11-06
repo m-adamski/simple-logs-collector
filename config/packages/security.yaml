@@ -7,18 +7,29 @@ security:
 
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        database_provider:
+        user_provider:
             entity:
                 class: App\Entity\User
+
+        client_provider:
+            entity:
+                class: App\Entity\Client
 
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        agent:
+            pattern: ^/agent/
+            provider: client_provider
+            access_token:
+                token_handler: App\Security\AccessTokenHandler
+
         main:
             lazy: true
             pattern: ^/
-            provider: database_provider
+            provider: user_provider
             switch_user: false
 
             # Login attempts are limited on max_attempts (default: 5) failed requests
