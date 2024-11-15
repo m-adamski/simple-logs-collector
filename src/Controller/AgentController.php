@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Client\InfluxDbClient;
+use App\Helper\EventHelper;
 use App\Model\DTO\Agent\WritePayload;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,16 +12,17 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AgentController extends AbstractController {
     public function __construct(
+        private readonly EventHelper    $eventHelper,
         private readonly InfluxDbClient $influxDbClient,
     ) {}
 
     #[Route("/agent/write", name: "agent.write", methods: ["POST"], format: "json")]
     public function write(#[MapRequestPayload] WritePayload $payload): JsonResponse {
         $this->influxDbClient->write(
-            $this->influxDbClient->createPoint($payload->measurement)
+            $this->influxDbClient->createPoint($payload->getMeasurement())
                 ->addTag("level", $payload->level)
-                ->addTag("levelName", $payload->levelName)
-                ->addTag("context", $payload->context)
+                ->addTag("level_name", $payload->levelName)
+                ->addTag("context", $this->eventHelper->encodeContext($payload->getContext()))
                 ->addField("message", $payload->message)
                 ->time($payload->timestamp)
         );

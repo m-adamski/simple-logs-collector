@@ -2,42 +2,18 @@
 
 namespace App\Client;
 
+use App\Entity\Event;
 use App\Model\InfluxDb\ParameterizedQuery;
 use InfluxDB2\Client;
 use InfluxDB2\FluxTable;
 use InfluxDB2\Model\Query;
-use InfluxDB2\Model\WritePrecision;
 use InfluxDB2\Point;
 use InfluxDB2\WriteType;
 
 class InfluxDbClient {
-    private ?Client $client = null;
-
     public function __construct(
-        private readonly string $url,
-        private readonly string $token,
-        private readonly string $bucket,
-        private readonly string $org,
+        private readonly Client $client,
     ) {}
-
-    /**
-     * Create InfluxDb Client.
-     *
-     * @return Client
-     */
-    public function createClient(): Client {
-        if (null === $this->client) {
-            $this->client = new Client([
-                "url"       => $this->url,
-                "token"     => $this->token,
-                "bucket"    => $this->bucket,
-                "org"       => $this->org,
-                "precision" => WritePrecision::S
-            ]);
-        }
-
-        return $this->client;
-    }
 
     /**
      * Send Query.
@@ -79,6 +55,21 @@ class InfluxDbClient {
     }
 
     /**
+     * Create an instance of the InfluxDb Point based on provided Event.
+     *
+     * @param Event $event
+     * @return Point
+     */
+    public function createPointFromEvent(Event $event): Point {
+        return (new Point($event->getMeasurement()))
+            ->addTag("event_id", $event->getId())
+            ->addTag("level", $event->getLevel())
+            ->addTag("level_name", $event->getLevelName())
+            ->addField("message", $event->getMessage())
+            ->time($event->getTimestamp());
+    }
+
+    /**
      * Shortcut to create InfluxDb Query.
      *
      * @param array|null $data
@@ -86,5 +77,12 @@ class InfluxDbClient {
      */
     public function createQuery(array $data = null): ParameterizedQuery {
         return new ParameterizedQuery($data);
+    }
+
+    /**
+     * @return Client
+     */
+    private function createClient(): Client {
+        return $this->client;
     }
 }

@@ -20,19 +20,24 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
+    # add more service definitions when explicit configuration is needed,
     # please note that last definitions always *replace* previous ones
     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
         arguments:
             - '%env(DATABASE_URL)%'
             - { db_table: 'session', ttl: 3600 }
 
+    InfluxDB2\Client:
+        arguments:
+            -   url: '%env(INFLUXDB_URL)%'
+                token: '%env(INFLUXDB_TOKEN)%'
+                org: '%env(INFLUXDB_ORG)%'
+                bucket: '%env(INFLUXDB_BUCKET)%'
+                precision: 's'
+
     App\Client\InfluxDbClient:
         arguments:
-            - '%env(INFLUXDB_URL)%'
-            - '%env(INFLUXDB_TOKEN)%'
-            - '%env(INFLUXDB_BUCKET)%'
-            - '%env(INFLUXDB_ORG)%'
+            - '@InfluxDB2\Client'
 
     App\Menu\MenuBuilder:
         arguments:
