@@ -12,14 +12,28 @@
  * The "importmap:require" command can be used to add new entries to this file.
  */
 return [
-    'application' => [
+    'application'                                 => [
         'path'       => './assets/js/application.js',
         'entrypoint' => true,
     ],
-    'preline'     => [
+    'table'                                       => [
+        'path'       => './assets/js/table.js',
+        'entrypoint' => true,
+    ],
+    'preline'                                     => [
         'version' => '2.5.1',
     ],
-    'clipboard'   => [
+    'clipboard'                                   => [
         'version' => '2.0.11',
+    ],
+    'lodash'                                      => [
+        'version' => '4.17.21',
+    ],
+    'tabulator-tables'                            => [
+        'version' => '6.3.0',
+    ],
+    'tabulator-tables/dist/css/tabulator.min.css' => [
+        'version' => '6.3.0',
+        'type'    => 'css',
     ],
 ];

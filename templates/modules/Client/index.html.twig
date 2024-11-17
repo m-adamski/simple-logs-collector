@@ -25,121 +25,13 @@
                         </div>
                     </div>
 
-                    {# Table Header #}
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-                        <thead class="bg-gray-50 dark:bg-neutral-900">
-                        <tr>
-
-                            <th scope="col" class="px-6 py-3 text-start">
-                                <div class="flex items-center gap-x-2">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                      {{ 'Name'|trans }}
-                                    </span>
-                                </div>
-                            </th>
-
-                            <th scope="col" class="px-6 py-3 text-start">
-                                <div class="flex items-center gap-x-2">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                      {{ 'Token'|trans }}
-                                    </span>
-                                </div>
-                            </th>
-
-                            <th scope="col" class="px-6 py-3 text-start">
-                                <div class="flex items-center gap-x-2">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                      {{ 'Status'|trans }}
-                                    </span>
-                                </div>
-                            </th>
-
-                            <th scope="col" class="px-6 py-3 text-start">
-                                <div class="flex items-center gap-x-2">
-                                    <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
-                                      {{ 'Created'|trans }}
-                                    </span>
-                                </div>
-                            </th>
-
-                            <th scope="col" class="px-6 py-3 text-end"></th>
-                        </tr>
-                        </thead>
-
-                        {# Table Body #}
-                        <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
-
-                        {% for client in clients %}
-                            <tr>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3">
-                                        <span class="text-sm text-gray-600 dark:text-neutral-400">{{ client.name }}</span>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3">
-                                        <twig:Button type="button" variant="ghost" size="small" data-clipboard data-clipboard-text="{{ client.secretToken }}">
-                                            {{ client.secretToken|u.truncate(25, '..') }}
-                                            <svg class="js-clipboard-default size-4 group-hover:rotate-6 transition" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
-                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                                            </svg>
-                                        </twig:Button>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3">
-                                        <span class="text-sm text-gray-600 dark:text-neutral-400">
-                                            {% if client.active %}
-                                                <span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500">
-                                                    {{ 'Active'|trans }}
-                                                </span>
-                                            {% else %}
-                                                <span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500">
-                                                    {{ 'Disabled'|trans }}
-                                                </span>
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-3">
-                                        <span class="text-sm text-gray-600 dark:text-neutral-400">{{ client.creationDate|date }}</span>
-                                    </div>
-                                </td>
-                                <td class="size-px whitespace-nowrap">
-                                    <div class="px-6 py-1.5">
-                                        <div class="hs-dropdown [--placement:bottom-right] relative inline-block">
-                                            <button id="hs-table-dropdown-1" type="button" class="hs-dropdown-toggle py-1.5 px-2 inline-flex justify-center items-center gap-2 rounded-lg text-gray-700 align-middle disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm dark:text-neutral-400 dark:hover:text-white dark:focus:ring-offset-gray-800" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                                                <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="1"></circle>
-                                                    <circle cx="19" cy="12" r="1"></circle>
-                                                    <circle cx="5" cy="12" r="1"></circle>
-                                                </svg>
-                                            </button>
-                                            <div class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden divide-y divide-gray-200 min-w-40 z-10 bg-white shadow-2xl rounded-lg p-2 mt-2 dark:divide-neutral-700 dark:bg-neutral-800 dark:border dark:border-neutral-700" role="menu" aria-orientation="vertical" aria-labelledby="hs-table-dropdown-1">
-                                                <div class="py-2 first:pt-0 last:pb-0">
-                                                    <a href="{{ path('client.edit', {'id': client.id}) }}" class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700 dark:focus:text-neutral-300">
-                                                        {{ 'Edit'|trans({}, 'messages') }}
-                                                    </a>
-                                                </div>
-                                                <div class="py-2 first:pt-0 last:pb-0">
-                                                    <a href="{{ path('client.delete', {'id': client.id}) }}" class="flex items-center gap-x-3 py-2 px-3 rounded-lg text-sm text-red-600 hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 dark:text-red-500 dark:hover:bg-neutral-700" data-confirmation>
-                                                        {{ 'Delete'|trans({}, 'messages') }}
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-
-                        </tbody>
-                    </table>
+                    <div id="table"></div>
                 </div>
             </div>
         </div>
     </div>
 
+{% endblock %}
+{% block importmap %}
+    {{ importmap(['application', 'table'], {'data-table-config': table|json_encode}) }}
 {% endblock %}

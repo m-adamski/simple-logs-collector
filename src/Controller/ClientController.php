@@ -7,6 +7,9 @@ use Adamski\Symfony\NotificationBundle\Model\Notification;
 use Adamski\Symfony\NotificationBundle\Model\Type;
 use App\Entity\Client;
 use App\Form\Client\BaseType;
+use App\Model\Tabulator\Adapter\StaticAdapter;
+use App\Model\Tabulator\Column\TextColumn;
+use App\Model\Tabulator\TabulatorFactory;
 use App\Repository\ClientRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -16,15 +19,65 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class ClientController extends AbstractController {
     public function __construct(
+        private readonly TabulatorFactory   $tabulatorFactory,
         private readonly ClientRepository   $clientRepository,
         private readonly NotificationHelper $notificationHelper,
     ) {}
 
-    #[Route("/{_locale}/client", name: "client", methods: ["GET"])]
+    #[Route("/{_locale}/client", name: "client", methods: ["GET", "POST"])]
     public function index(Request $request): Response {
         $this->denyAccessUnlessGranted("ROLE_ADMINISTRATOR");
 
+        $clientTable = $this->tabulatorFactory
+            ->create("#table")
+            ->setOptions([
+//                "ajaxConfig"      => "GET",
+//                "ajaxContentType" => "form",
+                "paginationSize" => 3,
+            ])
+            ->addColumn("name", TextColumn::class, [
+                "title" => "Name",
+                "field" => "name",
+            ])
+            ->addColumn("token", TextColumn::class, [
+                "title"     => "Token",
+                "field"     => "token",
+                "widthGrow" => 2
+            ])
+            ->addColumn("status", TextColumn::class, [
+                "title" => "Status",
+                "field" => "status",
+            ])
+            ->addColumn("creationDate", TextColumn::class, [
+                "title" => "Created",
+                "field" => "creationDate",
+            ])
+            ->setAdapter((new StaticAdapter())
+                ->setData([
+                    ["id" => 1, "name" => "Test1", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 2, "name" => "Test2", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 3, "name" => "Test3", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 4, "name" => "Test4", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 5, "name" => "Test5", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 6, "name" => "Test6", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 7, "name" => "Test7", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 8, "name" => "Test8", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 9, "name" => "Test9", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 10, "name" => "Test10", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 11, "name" => "Test11", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 12, "name" => "Test12", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 13, "name" => "Test13", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 14, "name" => "Test14", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                    ["id" => 15, "name" => "Test15", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
+                ])
+            );
+
+        if (null !== ($tableResponse = $clientTable->handleRequest($request))) {
+            return $tableResponse;
+        }
+
         return $this->render("modules/Client/index.html.twig", [
+            "table"   => $clientTable->getConfig(),
             "clients" => $this->clientRepository->findAll(),
         ]);
     }

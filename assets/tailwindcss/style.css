@@ -2,8 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-label.required::after {
-    content: "*";
-    margin-left: 5px;
-    color: red;
+@layer components {
+    label.required::after {
+        content: "*";
+        margin-left: theme("margin.1");
+        color: theme("colors.red.500")
+    }
+}
+
+/* Overwrite Tabulator Styles */
+/* If you want to add some custom CSS that should always be included, */
+/* add it to your stylesheet without using the @layer directive */
+.tabulator {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-neutral-700;
+
+    .tabulator-header {
+        @apply bg-gray-50 dark:bg-neutral-900;
+
+        .tabulator-header-contents {
+            > br {
+                @apply hidden;
+            }
+
+            .tabulator-headers {
+                @apply flex flex-row justify-center items-center;
+
+                .tabulator-col {
+                    @apply flex flex-row items-center;
+
+                    .tabulator-col-content {
+                        @apply w-full;
+
+                        .tabulator-col-title-holder {
+                            @apply flex flex-row items-center justify-between w-full px-6 py-3;
+
+                            .tabulator-col-title {
+                                @apply text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200;
+                            }
+                        }
+                    }
+
+                    &.tabulator-sortable {
+                        .tabulator-arrow {
+                            @apply h-0 w-0 border-x-[4px] border-x-transparent border-b-[6px] border-b-gray-300 ml-4 cursor-pointer;
+                        }
+                    }
+
+                    &[aria-sort='ascending'], &[aria-sort='descending'] {
+                        .tabulator-arrow {
+                            @apply border-b-gray-500;
+                        }
+                    }
+
+                    &[aria-sort='descending'] {
+                        .tabulator-arrow {
+                            @apply rotate-180;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .tabulator-tableholder {
+        .tabulator-table {
+            @apply flex flex-col divide-y divide-gray-200 dark:divide-neutral-700;
+
+            .tabulator-row {
+                @apply flex flex-row odd:bg-white even:bg-gray-100 dark:odd:bg-neutral-900 dark:even:bg-neutral-800;
+
+                .tabulator-cell {
+                    @apply px-6 py-3 text-sm text-gray-600 dark:text-neutral-400;
+                }
+            }
+        }
+    }
+
+    .tabulator-footer {
+        .tabulator-footer-contents {
+            .tabulator-paginator {
+                @apply flex items-center gap-x-1;
+
+                .tabulator-page {
+                    @apply min-h-[38px] min-w-[38px] py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-white/10 dark:focus:bg-white/10;
+
+                    &.active {
+                        @apply min-h-[38px] min-w-[38px] inline-flex justify-center items-center bg-gray-200 text-gray-800 py-2 px-3 text-sm rounded-lg focus:outline-none focus:bg-gray-300 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-600 dark:text-white dark:focus:bg-neutral-500;
+                    }
+                }
+            }
+        }
+    }
 }
