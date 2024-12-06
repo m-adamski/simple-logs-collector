@@ -1,3 +1,3 @@
-import {default as ClipboardJS} from "clipboard";
+import { default as ClipboardJS } from "clipboard";
 
 const clipboard = new ClipboardJS("*[data-clipboard]");

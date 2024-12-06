@@ -5,6 +5,13 @@ namespace App\Controller;
 use Adamski\Symfony\NotificationBundle\Helper\NotificationHelper;
 use Adamski\Symfony\NotificationBundle\Model\Notification;
 use Adamski\Symfony\NotificationBundle\Model\Type;
+use Adamski\Symfony\TabulatorBundle\Adapter\Doctrine\RepositoryAdapter;
+use Adamski\Symfony\TabulatorBundle\Column\DateTimeColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TextColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TickCrossColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TwigColumn;
+use Adamski\Symfony\TabulatorBundle\Tabulator;
+use Adamski\Symfony\TabulatorBundle\TabulatorFactory;
 use App\Entity\User;
 use App\Form\User\BaseType;
 use App\Helper\SecurityHelper;
@@ -17,17 +24,29 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class UserController extends AbstractController {
     public function __construct(
+        private readonly TabulatorFactory   $tabulatorFactory,
         private readonly UserRepository     $userRepository,
         private readonly SecurityHelper     $securityHelper,
         private readonly NotificationHelper $notificationHelper,
     ) {}
 
-    #[Route("/{_locale}/user", name: "user", methods: ["GET"])]
+    #[Route("/{_locale}/user", name: "user", methods: ["GET", "POST"])]
     public function index(Request $request): Response {
         $this->denyAccessUnlessGranted("ROLE_ADMINISTRATOR");
 
+        $userTable = $this->createTable();
+
+        if (null !== ($tableResponse = $userTable->handleRequest($request))) {
+            return $tableResponse;
+        }
+
         return $this->render("modules/User/index.html.twig", [
-            "users" => $this->userRepository->findAll(),
+            "table"         => $userTable->getConfig(),
+            "search_config" => [[
+                ["field" => "name", "type" => "like", "value" => "%"],
+                ["field" => "emailAddress", "type" => "like", "value" => "%"],
+                ["field" => "creationDate", "type" => "like", "value" => "%"],
+            ]]
         ]);
     }
 
@@ -108,6 +127,43 @@ class UserController extends AbstractController {
         }
 
         throw $this->createNotFoundException();
+    }
+
+    private function createTable(): Tabulator {
+        return $this->tabulatorFactory
+            ->create("#table")
+            ->addColumn("name", TextColumn::class, [
+                "title" => "Name",
+            ])
+            ->addColumn("emailAddress", TextColumn::class, [
+                "title" => "Email Address",
+                "extra" => [
+                    "widthGrow" => 2
+                ]
+            ])
+            ->addColumn("active", TickCrossColumn::class, [
+                "title"        => "Status",
+                "tickElement"  => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500">Active</span>',
+                "crossElement" => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500">Disabled</span>',
+            ])
+            ->addColumn("creationDate", DateTimeColumn::class, [
+                "title"  => "Created",
+                "format" => "Y-m-d H:i",
+            ])
+            ->addColumn("action", TwigColumn::class, [
+                "title"    => "Action",
+                "passRow"  => true,
+                "template" => "modules/User/table/action.html.twig",
+                "extra"    => [
+                    "headerSort" => false
+                ]
+            ])
+            ->createAdapter(RepositoryAdapter::class, [
+                "entity"        => User::class,
+                "query_builder" => function (UserRepository $userRepository) {
+                    return $userRepository->createQueryBuilder("user");
+                }
+            ]);
     }
 
     /**

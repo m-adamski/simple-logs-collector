@@ -2,6 +2,7 @@
 
 return [
     Adamski\Symfony\NotificationBundle\NotificationBundle::class     => ['all' => true],
+    Adamski\Symfony\TabulatorBundle\TabulatorBundle::class           => ['all' => true],
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class             => ['all' => true],
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Knp\Bundle\MenuBundle\KnpMenuBundle::class                       => ['all' => true],

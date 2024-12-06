@@ -5,11 +5,15 @@ namespace App\Controller;
 use Adamski\Symfony\NotificationBundle\Helper\NotificationHelper;
 use Adamski\Symfony\NotificationBundle\Model\Notification;
 use Adamski\Symfony\NotificationBundle\Model\Type;
+use Adamski\Symfony\TabulatorBundle\Adapter\Doctrine\RepositoryAdapter;
+use Adamski\Symfony\TabulatorBundle\Column\DateTimeColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TextColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TickCrossColumn;
+use Adamski\Symfony\TabulatorBundle\Column\TwigColumn;
+use Adamski\Symfony\TabulatorBundle\Tabulator;
+use Adamski\Symfony\TabulatorBundle\TabulatorFactory;
 use App\Entity\Client;
 use App\Form\Client\BaseType;
-use App\Model\Tabulator\Adapter\StaticAdapter;
-use App\Model\Tabulator\Column\TextColumn;
-use App\Model\Tabulator\TabulatorFactory;
 use App\Repository\ClientRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -28,57 +32,19 @@ class ClientController extends AbstractController {
     public function index(Request $request): Response {
         $this->denyAccessUnlessGranted("ROLE_ADMINISTRATOR");
 
-        $clientTable = $this->tabulatorFactory
-            ->create("#table")
-            ->setOptions([
-//                "ajaxConfig"      => "GET",
-//                "ajaxContentType" => "form",
-                "paginationSize" => 3,
-            ])
-            ->addColumn("name", TextColumn::class, [
-                "title" => "Name",
-                "field" => "name",
-            ])
-            ->addColumn("token", TextColumn::class, [
-                "title"     => "Token",
-                "field"     => "token",
-                "widthGrow" => 2
-            ])
-            ->addColumn("status", TextColumn::class, [
-                "title" => "Status",
-                "field" => "status",
-            ])
-            ->addColumn("creationDate", TextColumn::class, [
-                "title" => "Created",
-                "field" => "creationDate",
-            ])
-            ->setAdapter((new StaticAdapter())
-                ->setData([
-                    ["id" => 1, "name" => "Test1", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 2, "name" => "Test2", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 3, "name" => "Test3", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 4, "name" => "Test4", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 5, "name" => "Test5", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 6, "name" => "Test6", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 7, "name" => "Test7", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 8, "name" => "Test8", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 9, "name" => "Test9", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 10, "name" => "Test10", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 11, "name" => "Test11", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 12, "name" => "Test12", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 13, "name" => "Test13", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 14, "name" => "Test14", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                    ["id" => 15, "name" => "Test15", "token" => "A", "status" => "Ok", "creationDate" => "Ok"],
-                ])
-            );
+        $clientTable = $this->createTable();
 
         if (null !== ($tableResponse = $clientTable->handleRequest($request))) {
             return $tableResponse;
         }
 
         return $this->render("modules/Client/index.html.twig", [
-            "table"   => $clientTable->getConfig(),
-            "clients" => $this->clientRepository->findAll(),
+            "table"         => $clientTable->getConfig(),
+            "search_config" => [[
+                ["field" => "name", "type" => "like", "value" => "%"],
+                ["field" => "secretToken", "type" => "like", "value" => "%"],
+                ["field" => "creationDate", "type" => "like", "value" => "%"],
+            ]]
         ]);
     }
 
@@ -150,6 +116,44 @@ class ClientController extends AbstractController {
         }
 
         throw $this->createNotFoundException();
+    }
+
+    private function createTable(): Tabulator {
+        return $this->tabulatorFactory
+            ->create("#table")
+            ->addColumn("name", TextColumn::class, [
+                "title" => "Name",
+            ])
+            ->addColumn("secretToken", TwigColumn::class, [
+                "title"    => "Token",
+                "template" => "modules/Client/table/secret-token.html.twig",
+                "extra"    => [
+                    "widthGrow" => 2
+                ]
+            ])
+            ->addColumn("active", TickCrossColumn::class, [
+                "title"        => "Status",
+                "tickElement"  => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500">Active</span>',
+                "crossElement" => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500">Disabled</span>',
+            ])
+            ->addColumn("creationDate", DateTimeColumn::class, [
+                "title"  => "Created",
+                "format" => "Y-m-d H:i",
+            ])
+            ->addColumn("action", TwigColumn::class, [
+                "title"    => "Action",
+                "passRow"  => true,
+                "template" => "modules/Client/table/action.html.twig",
+                "extra"    => [
+                    "headerSort" => false
+                ]
+            ])
+            ->createAdapter(RepositoryAdapter::class, [
+                "entity"        => Client::class,
+                "query_builder" => function (ClientRepository $clientRepository) {
+                    return $clientRepository->createQueryBuilder("client");
+                }
+            ]);
     }
 
     /**
