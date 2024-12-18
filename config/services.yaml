@@ -37,6 +37,7 @@ services:
 
     App\Client\InfluxDbClient:
         arguments:
+            - '%env(INFLUXDB_BUCKET)%'
             - '@InfluxDB2\Client'
 
     App\Menu\MenuBuilder:

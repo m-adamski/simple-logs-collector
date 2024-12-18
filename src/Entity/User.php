@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -15,6 +17,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer", unique: true)]
     private ?int $id = null;
+
+    #[ORM\OneToMany(targetEntity: Filter::class, mappedBy: "user")]
+    private Collection $filters;
 
     #[Assert\NotBlank]
     #[ORM\Column(type: "string")]
@@ -42,12 +47,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface {
     private \DateTime $updateDate;
 
     public function __construct() {
+        $this->filters = new ArrayCollection();
         $this->creationDate = new \DateTime();
         $this->updateDate = new \DateTime();
     }
 
     public function getId(): ?int {
         return $this->id;
+    }
+
+    public function getFilters(): Collection {
+        return $this->filters;
     }
 
     public function getName(): string {

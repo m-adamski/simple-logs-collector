@@ -1,6 +1,10 @@
 import { TabulatorFull as Tabulator } from "tabulator-tables";
-import { readAttribute } from "./functions/read-attribute.js";
-import { initTabulator } from "../../vendor/m-adamski/symfony-tabulator-bundle/src/Resources/public/js/tabulator.js";
+import { readAttribute } from "../functions/read-attribute.js";
+import { initTabulator } from "../../../vendor/m-adamski/symfony-tabulator-bundle/src/Resources/public/js/tabulator.js";
+
+// Modules
+import { initClipboard } from "../plugins/clipboard.js";
+import { initConfirmationModal } from "../plugins/confirmation-modal.js";
 
 let tableConfigAttr = readAttribute("table-config");
 
@@ -27,8 +31,16 @@ if (null !== tableConfigAttr) {
         });
 
         // Reinit
+        let renderTimeout = null;
+
         tabulator.on("renderComplete", () => {
-            window.HSStaticMethods.autoInit();
+            clearTimeout(renderTimeout);
+
+            renderTimeout = setTimeout(() => {
+                window.HSStaticMethods.autoInit();
+                initClipboard();
+                initConfirmationModal();
+            }, 500);
         });
     });
 }

@@ -8,7 +8,6 @@ use Adamski\Symfony\NotificationBundle\Model\Type;
 use Adamski\Symfony\TabulatorBundle\Adapter\Doctrine\RepositoryAdapter;
 use Adamski\Symfony\TabulatorBundle\Column\DateTimeColumn;
 use Adamski\Symfony\TabulatorBundle\Column\TextColumn;
-use Adamski\Symfony\TabulatorBundle\Column\TickCrossColumn;
 use Adamski\Symfony\TabulatorBundle\Column\TwigColumn;
 use Adamski\Symfony\TabulatorBundle\Tabulator;
 use Adamski\Symfony\TabulatorBundle\TabulatorFactory;
@@ -41,7 +40,7 @@ class UserController extends AbstractController {
         }
 
         return $this->render("modules/User/index.html.twig", [
-            "table"         => $userTable->getConfig(),
+            "table"         => $userTable,
             "search_config" => [[
                 ["field" => "name", "type" => "like", "value" => "%"],
                 ["field" => "emailAddress", "type" => "like", "value" => "%"],
@@ -141,10 +140,9 @@ class UserController extends AbstractController {
                     "widthGrow" => 2
                 ]
             ])
-            ->addColumn("active", TickCrossColumn::class, [
-                "title"        => "Status",
-                "tickElement"  => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-teal-100 text-teal-800 dark:bg-teal-800/30 dark:text-teal-500">Active</span>',
-                "crossElement" => '<span class="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-800/30 dark:text-red-500">Disabled</span>',
+            ->addColumn("active", TwigColumn::class, [
+                "title"    => "Status",
+                "template" => "modules/User/table/active.html.twig"
             ])
             ->addColumn("creationDate", DateTimeColumn::class, [
                 "title"  => "Created",

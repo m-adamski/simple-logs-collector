@@ -3,10 +3,10 @@
 /**
  * Returns the importmap for this application.
  *
- * - "Path" is a path inside the asset mapper system. Use the
+ * - "path" is a path inside the asset mapper system. Use the
  *     "debug:asset-map" command to see the full list of paths.
  *
- * - "Entrypoint" (JavaScript only) set to true for any module that will
+ * - "entrypoint" (JavaScript only) set to true for any module that will
  *     be used as an "entrypoint" (and passed to the importmap() Twig function).
  *
  * The "importmap:require" command can be used to add new entries to this file.
@@ -16,8 +16,12 @@ return [
         'path'       => './assets/js/application.js',
         'entrypoint' => true,
     ],
-    'table'                                       => [
-        'path'       => './assets/js/table.js',
+    'tabulator'                                   => [
+        'path'       => './assets/js/plugins/tabulator.js',
+        'entrypoint' => true,
+    ],
+    'module.dashboard'                            => [
+        'path'       => './assets/js/modules/dashboard.js',
         'entrypoint' => true,
     ],
     'preline'                                     => [
@@ -35,5 +39,8 @@ return [
     'tabulator-tables/dist/css/tabulator.min.css' => [
         'version' => '6.3.0',
         'type'    => 'css',
+    ],
+    'moment'                                      => [
+        'version' => '2.30.1',
     ],
 ];

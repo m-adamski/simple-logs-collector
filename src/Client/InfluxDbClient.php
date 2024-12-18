@@ -2,7 +2,6 @@
 
 namespace App\Client;
 
-use App\Entity\Event;
 use App\Model\InfluxDb\ParameterizedQuery;
 use InfluxDB2\Client;
 use InfluxDB2\FluxTable;
@@ -12,6 +11,7 @@ use InfluxDB2\WriteType;
 
 class InfluxDbClient {
     public function __construct(
+        private readonly string $bucket,
         private readonly Client $client,
     ) {}
 
@@ -55,21 +55,6 @@ class InfluxDbClient {
     }
 
     /**
-     * Create an instance of the InfluxDb Point based on provided Event.
-     *
-     * @param Event $event
-     * @return Point
-     */
-    public function createPointFromEvent(Event $event): Point {
-        return (new Point($event->getMeasurement()))
-            ->addTag("event_id", $event->getId())
-            ->addTag("level", $event->getLevel())
-            ->addTag("level_name", $event->getLevelName())
-            ->addField("message", $event->getMessage())
-            ->time($event->getTimestamp());
-    }
-
-    /**
      * Shortcut to create InfluxDb Query.
      *
      * @param array|null $data
@@ -82,7 +67,16 @@ class InfluxDbClient {
     /**
      * @return Client
      */
-    private function createClient(): Client {
+    public function createClient(): Client {
         return $this->client;
+    }
+
+    /**
+     * Get Bucket.
+     *
+     * @return string
+     */
+    public function getBucket(): string {
+        return $this->bucket;
     }
 }

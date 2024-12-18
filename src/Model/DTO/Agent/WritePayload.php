@@ -2,6 +2,7 @@
 
 namespace App\Model\DTO\Agent;
 
+use App\Model\Event\Level;
 use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,10 +14,11 @@ class WritePayload {
         public string $measurement,
 
         #[Assert\NotBlank]
+        #[Assert\Choice(callback: [Level::class, "values"])]
         public int    $level,
 
         #[Assert\NotBlank]
-        #[Assert\Length(max: 250)]
+        #[Assert\Choice(callback: [Level::class, "names"])]
         #[SerializedName("level_name")]
         public string $levelName,
 

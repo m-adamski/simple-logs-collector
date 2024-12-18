@@ -3,9 +3,13 @@
 namespace App\Helper;
 
 use App\Model\Event\Event;
+use App\Repository\ClientRepository;
 use InfluxDB2\FluxTable;
 
 class EventHelper {
+    public function __construct(
+        private readonly ClientRepository $clientRepository,
+    ) {}
 
     /**
      * Parse InfluxDb Query Result.
@@ -20,7 +24,14 @@ class EventHelper {
         foreach ($responseItems as $responseItem) {
             if ($responseItem instanceof FluxTable) {
                 foreach ($responseItem->records as $record) {
+                    $itemClient = null;
+
+                    if (isset($record->values["client"])) {
+                        $itemClient = $this->clientRepository->findOneBy(["id" => $record->values["client"]]);
+                    }
+
                     $response[] = (new Event())
+                        ->setClient($itemClient)
                         ->setMeasurement($record->values["_measurement"])
                         ->setLevel($record->values["level"])
                         ->setLevelName($record->values["level_name"])

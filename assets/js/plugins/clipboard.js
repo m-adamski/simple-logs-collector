@@ -1,3 +1,9 @@
-import { default as ClipboardJS } from "clipboard";
+import ClipboardJS from "clipboard";
 
-const clipboard = new ClipboardJS("*[data-clipboard]");
+export const initClipboard = () => {
+    const clipboard = new ClipboardJS("*[data-clipboard]");
+
+    clipboard.on("success", function (event) {
+        event.clearSelection();
+    });
+}

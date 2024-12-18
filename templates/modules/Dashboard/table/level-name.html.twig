@@ -1,0 +1,10 @@
+{# https://github.com/symfony/symfony/blob/7.2/src/Symfony/Component/HttpKernel/Log/Logger.php #}
+{% if content.level == 100 %}
+    <twig:Badge>{{ content.levelName }}</twig:Badge>
+{% elseif content.level == 200 or content.level == 250 %}
+    <twig:Badge color="blue">{{ content.levelName }}</twig:Badge>
+{% elseif content.level == 300 %}
+    <twig:Badge color="yellow">{{ content.levelName }}</twig:Badge>
+{% else %}
+    <twig:Badge color="red">{{ content.levelName }}</twig:Badge>
+{% endif %}

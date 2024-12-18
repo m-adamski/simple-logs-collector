@@ -1,21 +1,30 @@
-document.querySelectorAll("*[data-confirmation]").forEach(function (item) {
-    item.addEventListener("click", function (e) {
-        e.preventDefault();
+export const initConfirmationModal = () => {
+    document.querySelectorAll("*[data-confirmation]").forEach(function (item) {
 
-        // const confirmationModal = HSOverlay.getInstance("#confirmation-modal", true);
-        const confirmationModal = HSOverlay.getInstance("*[data-confirmation-modal]", true);
-        confirmationModal.element.open();
+        // https://stackoverflow.com/a/19470348
+        let cloneItem = item.cloneNode(true);
+        item.parentElement.replaceChild(cloneItem, item);
 
-        document.querySelectorAll("*[data-confirmation-confirm]").forEach(function (confirmButton) {
-            confirmButton.addEventListener("click", function (confirmEvent) {
-                confirmEvent.preventDefault();
+        let onClick = (e) => {
+            e.preventDefault();
 
-                const confirmHref = item.href ?? item.dataset["confirmHref"];
+            // const confirmationModal = HSOverlay.getInstance("#confirmation-modal", true);
+            const confirmationModal = HSOverlay.getInstance("*[data-confirmation-modal]", true);
+            confirmationModal.element.open();
 
-                if (confirmHref !== null && confirmHref !== undefined && confirmHref !== "") {
-                    window.location = confirmHref;
-                }
+            document.querySelectorAll("*[data-confirmation-confirm]").forEach(function (confirmButton) {
+                confirmButton.addEventListener("click", function (confirmEvent) {
+                    confirmEvent.preventDefault();
+
+                    const confirmHref = item.href ?? item.dataset["confirmHref"];
+
+                    if (confirmHref !== null && confirmHref !== undefined && confirmHref !== "") {
+                        window.location = confirmHref;
+                    }
+                });
             });
-        });
+        };
+
+        cloneItem.addEventListener("click", onClick);
     });
-});
+}

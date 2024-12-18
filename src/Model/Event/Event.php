@@ -2,13 +2,25 @@
 
 namespace App\Model\Event;
 
+use App\Entity\Client;
+
 class Event {
+    private ?Client $client = null;
     private string $measurement;
     private int $level;
     private string $levelName;
     private string $message;
     private ?array $context = null;
     private \DateTime $dateTime;
+
+    public function getClient(): ?Client {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): Event {
+        $this->client = $client;
+        return $this;
+    }
 
     public function getMeasurement(): string {
         return $this->measurement;
