@@ -79,7 +79,21 @@
 
         .tabulator-placeholder {
             .tabulator-placeholder-contents {
-                @apply flex flex-row items-center justify-center w-full h-24;
+                @apply flex flex-row items-center justify-center w-full h-16;
+            }
+        }
+    }
+
+    .tabulator-alert {
+        .tabulator-alert-msg {
+            @apply flex flex-row items-center justify-center w-full h-16;
+
+            &.tabulator-alert-state-msg {
+                /* Nothing */
+            }
+
+            &.tabulator-alert-state-error {
+                @apply text-red-700;
             }
         }
     }

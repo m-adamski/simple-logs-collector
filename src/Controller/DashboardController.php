@@ -2,21 +2,17 @@
 
 namespace App\Controller;
 
-use Adamski\Symfony\TabulatorBundle\Adapter\CallableAdapter;
+use Adamski\Symfony\TabulatorBundle\Adapter\Doctrine\RepositoryAdapter;
 use Adamski\Symfony\TabulatorBundle\AdapterQuery;
-use Adamski\Symfony\TabulatorBundle\ArrayResult;
 use Adamski\Symfony\TabulatorBundle\Column\DateTimeColumn;
 use Adamski\Symfony\TabulatorBundle\Column\PropertyColumn;
 use Adamski\Symfony\TabulatorBundle\Column\TextColumn;
 use Adamski\Symfony\TabulatorBundle\Column\TwigColumn;
-use Adamski\Symfony\TabulatorBundle\Filter\FilteringComparison;
-use Adamski\Symfony\TabulatorBundle\Filter\FilteringType;
 use Adamski\Symfony\TabulatorBundle\TabulatorFactory;
-use App\Client\InfluxDbClient;
 use App\Entity\Filter;
 use App\Form\Dashboard\FilterType;
-use App\Helper\EventHelper;
 use App\Model\Filter\QuickRange;
+use App\Repository\EventRepository;
 use Carbon\Carbon;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -26,8 +22,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DashboardController extends AbstractController {
     public function __construct(
-        private readonly EventHelper      $eventHelper,
-        private readonly InfluxDbClient   $influxDbClient,
+        private readonly EventRepository  $eventRepository,
         private readonly TabulatorFactory $tabulatorFactory,
     ) {}
 
@@ -43,11 +38,14 @@ class DashboardController extends AbstractController {
         $filterForm = $this->createFilterForm($filter);
 
         // Define Tabulator Table
-        $influxTable = $this->tabulatorFactory
+        $eventTable = $this->tabulatorFactory
             ->create("#table")
             ->setOptions([
-                "placeholder" => "No Data Available",
-                "pagination"  => false
+                "placeholder"   => "No Data Available",
+                "initialFilter" => [
+                    ["field" => "timestamp", "type" => ">", "value" => Carbon::now()->subMinutes(15)->toIso8601String()],
+                    ["field" => "timestamp", "type" => "<=", "value" => Carbon::now()->toIso8601String()],
+                ]
             ])
             ->addColumn("client", PropertyColumn::class, [
                 "title"     => "Client",
@@ -56,7 +54,6 @@ class DashboardController extends AbstractController {
             ])
             ->addColumn("measurement", TwigColumn::class, [
                 "title"    => "Measurement",
-                "field"    => "_measurement",
                 "template" => "modules/Dashboard/table/measurement.html.twig"
             ])
             ->addColumn("level", TwigColumn::class, [
@@ -71,103 +68,51 @@ class DashboardController extends AbstractController {
                     "widthGrow"  => 3
                 ]
             ])
-            ->addColumn("dateTime", DateTimeColumn::class, [
-                "title"  => "Created",
-                "format" => "Y-m-d H:i:s"
+            ->addColumn("timestamp", DateTimeColumn::class, [
+                "title"  => "Timestamp",
+                "format" => "Y-m-d H:i:s",
+                "extra"  => [
+                    "widthGrow" => 1.5
+                ]
             ])
-            ->createAdapter(CallableAdapter::class, [
-                "function" => function (AdapterQuery $adapterQuery) {
-                    $filters = $adapterQuery->getFilteringBag()->getFilters(FilteringComparison::AND);
-                    $filterStartDate = $this->getFilterDate($filters, FilteringType::GREATER) ?? Carbon::now()->subMinutes(15);
-                    $filterEndDate = $this->getFilterDate($filters, FilteringType::LESS_OR_EQUAL) ?? new \DateTime();
-
-                    $queryPart = [
-                        'from(bucket: "params.bucketParam")',
-                        'range(start: params.timeRangeStart, stop: params.timeRangeStop)'
-                    ];
-
-                    if ($adapterQuery->getFilteringBag()->hasFiltering()) {
-                        foreach ($filters as $filter) {
-                            if ($filter->getColumn()->getOption("field") !== "dateTime" && !empty($filter->getValue())) {
-                                $queryPart[] = sprintf('filter(fn: (r) => r["%s"] == "%s")', $filter->getColumn()->getOption("field"), $filter->getValue());
-                            }
-                        }
-                    }
-
-                    // Create Query
-                    $influxQuery = implode(" |> ", $queryPart);
-
-//                    $queryResult = $this->influxDbClient->query(
-//                        $this->influxDbClient->createQuery()
-//                            ->setQuery('from(bucket: "params.bucketParam") |> range(start: params.timeRangeStart, stop: params.timeRangeStop)')
-//                            ->setParams([
-//                                "bucketParam"    => "default",
-//                                "timeRangeStart" => \DateTime::createFromFormat("Y-m-d H:i:s", "2024-11-01 00:00:00", new \DateTimeZone("UTC"))->getTimestamp(),
-//                                "timeRangeStop"  => \DateTime::createFromFormat("Y-m-d H:i:s", "2024-12-24 14:00:00", new \DateTimeZone("UTC"))->getTimestamp()
-//                            ])
-//                            ->compile()
-//                    );
-
-                    $queryResult = $this->influxDbClient->query(
-                        $this->influxDbClient->createQuery()
-                            ->setQuery($influxQuery)
-                            ->setParams([
-                                "bucketParam"    => $this->influxDbClient->getBucket() ?? "default",
-                                "timeRangeStart" => $filterStartDate->getTimestamp(),
-                                "timeRangeStop"  => $filterEndDate->getTimestamp()
-                            ])
-                            ->compile()
-                    );
-
-                    $queryResponse = $this->eventHelper->parseResponse($queryResult);
-
-                    return new ArrayResult($queryResponse);
+            ->addColumn("action", TwigColumn::class, [
+                "title"    => false,
+                "passRow"  => true,
+                "template" => "modules/Dashboard/table/action.html.twig",
+                "extra"    => [
+                    "headerSort" => false
+                ]
+            ])
+            ->createAdapter(RepositoryAdapter::class, [
+                "entity"        => "App\Entity\Event",
+                "query_builder" => function (EventRepository $repository, AdapterQuery $adapterQuery) {
+                    return $repository->createQueryBuilder("event");
                 }
             ]);
 
         // Handle Request
-        if (null !== ($tableResponse = $influxTable->handleRequest($request))) {
+        if (null !== ($tableResponse = $eventTable->handleRequest($request))) {
             return $tableResponse;
         }
 
         return $this->render("modules/Dashboard/index.html.twig", [
-            "table"       => $influxTable,
-            "filter_form" => $filterForm->createView()
+            "table"       => $eventTable,
+            "filter_form" => $filterForm->createView(),
+            "timezone"    => date_default_timezone_get(),
         ]);
     }
 
-    /**
-     * @param string $bucket
-     * @return array
-     */
-    private function getMeasurements(string $bucket = "default"): array {
-        $measurements = [];
-
-        // https://community.influxdata.com/t/how-to-get-all-measurements-in-a-bucket/33595/2
-        $measurementResult = $this->influxDbClient->query(
-            "import \"influxdata/influxdb/schema\" \n schema.measurements(bucket: \"" . $bucket . "\")"
-        );
-
-        // Parse result
-        foreach ($measurementResult as $result) {
-            foreach ($result->records as $record) {
-                $measurementName = $record->values["_value"];
-                $measurements[$measurementName] = $measurementName;
+    #[Route("/{_locale}/dashboard/event", name: "dashboard.event", methods: ["POST"], format: "json")]
+    public function event(Request $request): Response {
+        if (null !== ($id = $request->getPayload()->get("id"))) {
+            if (null !== ($event = $this->eventRepository->findOneBy(["id" => $id]))) {
+                return $this->render("modules/Dashboard/event-modal.html.twig", [
+                    "event" => $event,
+                ]);
             }
         }
 
-        return $measurements;
-    }
-
-    private function getFilterDate(array $filters, FilteringType $condition): ?\DateTime {
-        foreach ($filters as $filter) {
-            if ($filter->getColumn()->getOption("field") === "dateTime" && $filter->getType() === $condition) {
-                // return \DateTime::createFromFormat("Y-m-d H:i:s", $filter->getValue(), new \DateTimeZone("UTC"));
-                return new \DateTime($filter->getValue());
-            }
-        }
-
-        return null;
+        throw $this->createNotFoundException();
     }
 
     /**
@@ -175,10 +120,10 @@ class DashboardController extends AbstractController {
      * @return FormInterface
      */
     private function createFilterForm(Filter $filter): FormInterface {
+        $availableMeasurements = $this->eventRepository->getMeasurements();
+
         return $this->createForm(FilterType::class, $filter, [
-            "measurements" => $this->getMeasurements(
-                $this->influxDbClient->getBucket()
-            ),
+            "measurements" => array_combine($availableMeasurements, $availableMeasurements),
         ]);
     }
 }

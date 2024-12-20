@@ -27,19 +27,6 @@ services:
             - '%env(DATABASE_URL)%'
             - { db_table: 'session', ttl: 3600 }
 
-    InfluxDB2\Client:
-        arguments:
-            -   url: '%env(INFLUXDB_URL)%'
-                token: '%env(INFLUXDB_TOKEN)%'
-                org: '%env(INFLUXDB_ORG)%'
-                bucket: '%env(INFLUXDB_BUCKET)%'
-                precision: 's'
-
-    App\Client\InfluxDbClient:
-        arguments:
-            - '%env(INFLUXDB_BUCKET)%'
-            - '@InfluxDB2\Client'
-
     App\Menu\MenuBuilder:
         arguments:
             - '@Knp\Menu\FactoryInterface'

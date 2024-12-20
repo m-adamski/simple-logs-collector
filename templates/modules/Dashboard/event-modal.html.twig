@@ -1,0 +1,18 @@
+<div class="h-full flex flex-col justify-between items-start gap-y-8">
+    <div class="inline-flex items-center gap-x-2">
+        {% include 'modules/Dashboard/table/level-name.html.twig' with {'content': event} %}
+        {% include 'modules/Dashboard/table/measurement.html.twig' with {'content': event.measurement} %}
+        <twig:Badge title="{{ event.timestamp|date('c') }}">{{ event.timestamp|date }}</twig:Badge>
+    </div>
+
+    <div class="">{{ event.message }}</div>
+
+    <div class="flex-grow overflow-auto w-full">
+        {# https://twig.symfony.com/doc/3.x/filters/json_encode.html#arguments #}
+        <pre class="font-sans text-gray-500 dark:text-neutral-500">
+            {{- event.context|json_encode(constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE')) -}}
+        </pre>
+    </div>
+</div>
+
+

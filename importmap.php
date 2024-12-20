@@ -43,4 +43,7 @@ return [
     'moment'                                      => [
         'version' => '2.30.1',
     ],
+    'moment-timezone'                             => [
+        'version' => '0.5.46',
+    ],
 ];
